@@ -84,6 +84,9 @@ DATABASES = {
         'PASSWORD': 'Admin@123',
         'HOST': 'srv957.hstgr.io',
         'PORT': '3306',
+        'OPTIONS': {
+            'sql_mode': 'STRICT_TRANS_TABLES',
+        },
     }
 }
 
