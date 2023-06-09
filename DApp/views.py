@@ -18,7 +18,7 @@ INFURA_URL = os.getenv('INFURA_URL')
 PRIVATE_KEY = os.getenv('PRIVATE_KEY')
 infura_project_id = 'DApp Product'
 w3 = Web3(Web3.HTTPProvider(INFURA_URL)) 
-#print(w3.is_connected())
+print(w3.is_connected())
 
 contract_address = SMART_CONTRACT_ADDRESS
 
@@ -77,10 +77,12 @@ def upload_product(request):
                })
         signed_txn = w3.eth.account.sign_transaction(transaction, PRIVATE_KEY)
         transaction_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction).hex()
-        '''
-        transaction_receipt = w3.eth.get_transaction_receipt(transaction_hash)
+        transaction_receipt = w3.eth.wait_for_transaction_receipt(transaction_hash)
+
         
-        if transaction_receipt.status ==1:
+        #transaction_receipt = w3.eth.get_transaction_receipt(transaction_hash)
+        
+        if transaction_receipt['status'] == 1:
             product.exists = True
             product.Hash = transaction_hash
             product.save()
@@ -97,15 +99,15 @@ def upload_product(request):
             'message': 'Product is unable to be registered on blockchain but it is saved in Database',
             'transaction_hash': None
         }, status=201)
-       '''
-        product.exists = True
-        product.Hash = transaction_hash
-        product.save()
-        return Response({
-        'success': True,
-        'message': 'Product registered successfully',
-        'transaction_hash': transaction_hash
-    }, status=201)
+       
+    #     product.exists = True
+    #     product.Hash = transaction_hash
+    #     product.save()
+    #     return Response({
+    #     'success': True,
+    #     'message': 'Product registered successfully',
+    #     'transaction_hash': transaction_hash
+    # }, status=201)
 
 
     except ContractLogicError as e:
@@ -118,7 +120,7 @@ def upload_product(request):
 
     except Exception as e:
         # Handle other unexpected errors
-        return Response({'success': False, 'error': 'An error occurred', 'e':str(e)}, status=500)
+        return Response({'success': False, 'message': 'Product is unable to be registered on blockchain but it is saved in Database', 'error':str(e)}, status=500)
 
 
 @api_view(['GET'])
