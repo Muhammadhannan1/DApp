@@ -10,5 +10,6 @@ urlpatterns = [
    # path('products/get/', getProduct),
     path('products/create/',upload_product ),
     path('transactions/check/<transaction_hash>/',check_transaction),
-    path('products/category/<subcatId>',get_products)
+    path('products/category/<subcatId>',get_products),
+    path('products/upload/', upload_productDB)
 ]

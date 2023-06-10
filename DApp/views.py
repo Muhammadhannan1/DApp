@@ -53,7 +53,6 @@ def upload_product(request):
     if price  < 100:
         return Response({'success': False, 'error': 'Price value Should be at least 100'}, status=400) 
     try:
-
         product = Product(
         Name=Name,
         Description=Description,
@@ -100,14 +99,6 @@ def upload_product(request):
             'transaction_hash': None
         }, status=201)
        
-    #     product.exists = True
-    #     product.Hash = transaction_hash
-    #     product.save()
-    #     return Response({
-    #     'success': True,
-    #     'message': 'Product registered successfully',
-    #     'transaction_hash': transaction_hash
-    # }, status=201)
 
 
     except ContractLogicError as e:
@@ -156,3 +147,49 @@ def get_products(request,subcatId):
         return Response({'success': True,'message':'Product Found ', 'data':serialized_products.data}, status=200)
     else:
         return Response({'success': False,'message':'No Product Found For This Category', 'data':None}, status=404)
+
+@api_view(['POST'])
+def upload_productDB(request):
+    data = request.data
+    Name = data.get('name')
+    Description = data.get('description')
+    Price = data.get('price')
+    subCategory = data.get('subcategory')
+
+    if not Name:
+        return Response({'success': False, 'error': 'Name field is required'}, status=400)
+    if not Description:
+        return Response({'success': False, 'error': 'Description field is required'}, status=400)
+    if not Price:
+        return Response({'success': False, 'error': 'Price field is required'}, status=400)
+    if not subCategory:
+        return Response({'success': False, 'error': 'subCategory field is required'}, status=400)    
+    
+    if len(Name) < 5:
+        return Response({'success': False, 'error': 'Name should be at least 5 characters'}, status=400)
+
+    if len(Description) < 10:
+        return Response({'success': False, 'error': 'Description should be at least 10 characters'}, status=400)
+    price = int(Price)
+    if price  < 100:
+        return Response({'success': False, 'error': 'Price value Should be at least 100'}, status=400)
+    
+    try:
+        product = Product(
+        Name=Name,
+        Description=Description,
+        price = price,
+        subCategory_id= subCategory
+        )
+        product.save()
+
+        return Response({
+        'success': True,
+        'message': 'Product registered successfully',
+        'data':None
+        }, status=201)
+
+    except Exception as e:
+        # Handle other unexpected errors
+        return Response({'success': False, 'message': 'Internal Server Error', 'error':str(e)}, status=500)
+
