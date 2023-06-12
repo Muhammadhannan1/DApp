@@ -18,7 +18,7 @@ INFURA_URL = os.getenv('INFURA_URL')
 PRIVATE_KEY = os.getenv('PRIVATE_KEY')
 infura_project_id = 'DApp Product'
 w3 = Web3(Web3.HTTPProvider(INFURA_URL)) 
-print(w3.is_connected())
+#print(w3.is_connected())
 
 contract_address = SMART_CONTRACT_ADDRESS
 
@@ -34,6 +34,7 @@ def upload_product(request):
     Description = data.get('description')
     Price = data.get('price')
     subCategory = data.get('subcategory')
+    Image = request.FILES.get('image')
 
     if not Name:
         return Response({'success': False, 'error': 'Name field is required'}, status=400)
@@ -43,6 +44,13 @@ def upload_product(request):
         return Response({'success': False, 'error': 'Price field is required'}, status=400)
     if not subCategory:
         return Response({'success': False, 'error': 'subCategory field is required'}, status=400)    
+    if not Image:
+        return Response({'success': False, 'error': 'Image file is required'}, status=400)
+    allowed_extensions = ['.jpg', '.jpeg', '.png','webp']
+    file_extension = os.path.splitext(Image.name)[1].lower()
+
+    if file_extension not in allowed_extensions:
+        return Response({'success': False, 'error': 'Only JPG and PNG images are allowed'}, status=400)
     
     if len(Name) < 5:
         return Response({'success': False, 'error': 'Name should be at least 5 characters'}, status=400)
@@ -57,7 +65,8 @@ def upload_product(request):
         Name=Name,
         Description=Description,
         price = price,
-        subCategory_id= subCategory
+        subCategory_id= subCategory,
+        image = Image
     )
         product.save()
         # Get the auto-generated product_id from the saved Product object
@@ -141,8 +150,6 @@ def check_transaction(request, transaction_hash):
 def get_products(request,subcatId):
     products = Product.objects.filter(subCategory_id=subcatId)
     serialized_products = ProductSerializer(products, many=True)
-    print(products)
-    print(serialized_products.data)
     if serialized_products.data:
         return Response({'success': True,'message':'Product Found ', 'data':serialized_products.data}, status=200)
     else:
@@ -155,6 +162,7 @@ def upload_productDB(request):
     Description = data.get('description')
     Price = data.get('price')
     subCategory = data.get('subcategory')
+    Image = request.FILES.get('image')
 
     if not Name:
         return Response({'success': False, 'error': 'Name field is required'}, status=400)
@@ -164,7 +172,13 @@ def upload_productDB(request):
         return Response({'success': False, 'error': 'Price field is required'}, status=400)
     if not subCategory:
         return Response({'success': False, 'error': 'subCategory field is required'}, status=400)    
-    
+    if not Image:
+        return Response({'success': False, 'error': 'Image file is required'}, status=400)
+    allowed_extensions = ['.jpg', '.jpeg', '.png','webp']
+    file_extension = os.path.splitext(Image.name)[1].lower()
+
+    if file_extension not in allowed_extensions:
+        return Response({'success': False, 'error': 'Only JPG and PNG images are allowed'}, status=400)
     if len(Name) < 5:
         return Response({'success': False, 'error': 'Name should be at least 5 characters'}, status=400)
 
@@ -179,7 +193,8 @@ def upload_productDB(request):
         Name=Name,
         Description=Description,
         price = price,
-        subCategory_id= subCategory
+        subCategory_id= subCategory,
+        image = Image
         )
         product.save()
 

@@ -18,8 +18,8 @@ class SubCategory(models.Model):
 class Product(models.Model):
     Name =models.CharField(max_length=50)
     Description =models.TextField()
-    Hash = models.CharField(max_length=100)
+    Hash = models.CharField(max_length=100, null=True)
     subCategory = models.ForeignKey(SubCategory,on_delete=models.PROTECT, blank=True ,default=9)
     price = models.IntegerField(validators=[MinValueValidator(100)],default=100)
-    image = models.ImageField(validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])],null=True)
+    image = models.ImageField(validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png','webp'])],null=True,upload_to="images/")
     exists = models.BooleanField(default=False)
